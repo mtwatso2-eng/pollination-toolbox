@@ -18,7 +18,9 @@ try({
   Sys.setenv(TZ = administratorData$tz)
 })
 
-
+# Tooltips for table column names - these tooltips are not table-specific 
+# (ie they will show up in any table containing one of the below names).
+# Tooltips are in the format "Column Name" = "Tooltip"
 tooltips <- list(
   "Unknown" = "This column shows up when pollinations can't be matched with a grouping factor. This often happens if someone makes a cross that isn't listed in the Pollination Master Sheet in Google Drive.",
   "SecondsPerPollination" = "The mean number of seconds per pollination, excluding outlier values like long breaks.",
