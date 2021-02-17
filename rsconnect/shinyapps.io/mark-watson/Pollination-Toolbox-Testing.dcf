@@ -1,0 +1,12 @@
+name: Pollination-Toolbox-Testing
+title: Pollination-Toolbox-Testing
+username:
+account: mark-watson
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3422773
+bundleId: 4215958
+url: https://mark-watson.shinyapps.io/Pollination-Toolbox-Testing/
+when: 1613156319.00161
+asMultiple: FALSE
+asStatic: FALSE
