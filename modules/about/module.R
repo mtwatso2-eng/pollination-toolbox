@@ -1,7 +1,7 @@
 about <- list(
 
   "ui" = fluidPage(
-    readChar("README.txt", file.info("README.txt")$size)
+    includeMarkdown("README.md")
   ),
 
   "server" = function(input, output, session){

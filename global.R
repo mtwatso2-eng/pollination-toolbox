@@ -1,5 +1,5 @@
 # Import packages
-require(shiny); require(shinyBS); library(knitr)
+require(shiny); require(shinyBS)
 require(magrittr); require(tidyverse); require(lubridate)
 require(googlesheets4)
 require(DT); require(plotly)
