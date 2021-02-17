@@ -2,8 +2,8 @@ source("global.R")
 
 # UI for Shiny app
 if("administratorData" %in% list.files()){
-  sapply(list.files(path = "modules", recursive = TRUE, pattern = "^.*\\.R$", full.names = TRUE), source)
   runAsync(list.files(path = "background", full.names = TRUE))
+  sapply(list.files(path = "modules", recursive = TRUE, pattern = "^.*\\.R$", full.names = TRUE), source)
   ui <- navbarPage(id = "tabs", collapsible = TRUE, title = "Pollination Toolbox",
     navbarMenu("Summaries",
       modulePanel("Pollination Counts", value = "pollinationCounts"),
@@ -66,6 +66,7 @@ server <- function(input, output, session) {
         email = administratorData$email
       )
       saveRDS(administratorData, "administratorData")
+      saveRDS(NULL, "cache")
       session$reload()
     })
   } else{
