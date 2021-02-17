@@ -1,9 +1,13 @@
 source("global.R")
 
-# UI for Shiny app
+# Run background processes and import modules if app is configured
 if("administratorData" %in% list.files()){
   runAsync(list.files(path = "background", full.names = TRUE))
   sapply(list.files(path = "modules", recursive = TRUE, pattern = "^.*\\.R$", full.names = TRUE), source)
+}
+
+# UI for Shiny app, defaults to blank page during configuration
+if("administratorData" %in% list.files()){
   ui <- navbarPage(id = "tabs", collapsible = TRUE, title = "Pollination Toolbox",
     navbarMenu("Summaries",
       modulePanel("Pollination Counts", value = "pollinationCounts"),
@@ -24,9 +28,10 @@ if("administratorData" %in% list.files()){
   )
 } else {ui <- fluidPage()}
 
-# Server function for Shiny app
+# Server function for Shiny app, including administrator configuration
 server <- function(input, output, session) {
   
+  # Open configuration modal if app isn't configured
   if(!"administratorData" %in% list.files()){
     showModal(modalDialog(footer = NULL,
       title = "It looks like you haven't set up the Pollination Toolbox yet.
@@ -69,7 +74,10 @@ server <- function(input, output, session) {
       saveRDS(NULL, "cache")
       session$reload()
     })
-  } else{
+  } 
+
+  # if app has been configured, run module server functions
+  if(!"administratorData" %in% list.files()){
     # Load server function for all modules
     sapply(list.files(path = "modules"), function(module){
       get(module)$server(input, output, session)
