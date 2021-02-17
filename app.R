@@ -2,7 +2,7 @@ if("administratorData" %in% list.files()){
   source("global.R")
   sapply(list.files(path = "modules", recursive = TRUE, pattern = "^.*\\.R$", full.names = TRUE), source)
   runAsync(list.files(path = "background", full.names = TRUE))
-}
+} else source("utils.R")
 
 # UI for Shiny app
 ui <- navbarPage(id = "tabs", collapsible = TRUE, title = "Pollination Toolbox",
