@@ -2,7 +2,7 @@ source("global.R")
 
 # Run background processes and import modules if app is configured
 if("administratorData" %in% list.files()){
-  runAsync(list.files(path = "background", full.names = TRUE))
+  # runAsync(list.files(path = "background", full.names = TRUE))
   sapply(list.files(path = "modules", recursive = TRUE, pattern = "^.*\\.R$", full.names = TRUE), source)
 }
 
@@ -77,7 +77,7 @@ server <- function(input, output, session) {
   } 
 
   # If app has been configured, run module server functions
-  if(!"administratorData" %in% list.files()){
+  if("administratorData" %in% list.files()){
     # Load server function for all modules
     sapply(list.files(path = "modules"), function(module){
       get(module)$server(input, output, session)
