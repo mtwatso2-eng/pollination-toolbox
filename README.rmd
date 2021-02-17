@@ -1,6 +1,10 @@
 ---
 title: "README.rmd"
+<<<<<<< HEAD
 output: rmarkdown::github_document
+=======
+output: html_document
+>>>>>>> d8f7903e72ef85066d7d53e3bee59d2eaee528c5
 ---
 
 ```{r setup, include=FALSE}
