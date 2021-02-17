@@ -76,7 +76,7 @@ server <- function(input, output, session) {
     })
   } 
 
-  # if app has been configured, run module server functions
+  # If app has been configured, run module server functions
   if(!"administratorData" %in% list.files()){
     # Load server function for all modules
     sapply(list.files(path = "modules"), function(module){
