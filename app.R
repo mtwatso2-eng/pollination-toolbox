@@ -65,14 +65,9 @@ server <- function(input, output, session) {
         cache = ".secrets",
         email = administratorData$email
       )
-<<<<<<< HEAD
       saveRDS(administratorData, "administratorData")
-=======
-      saveRDS(administratorData, administratorData)
->>>>>>> a575800755632518d444124534a69ea31f6b3ebb
       session$reload()
-    }
-    )
+    })
   } else{
     # Load server function for all modules
     sapply(list.files(path = "modules"), function(module){
