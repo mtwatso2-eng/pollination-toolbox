@@ -2,6 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+
 .secrets
+.DS_Store
 administratorData
 cache
