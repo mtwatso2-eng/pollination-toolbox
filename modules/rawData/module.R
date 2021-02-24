@@ -34,7 +34,7 @@ rawData <- list(
         buttons = list(
           list(
             extend = "csv",
-            filename = paste(input$dedicationHelperGroup,
+            filename = paste(input$whichRawData,
               "Summary",
               exportOptions = list(modifier = list(page = "all")))
           )
