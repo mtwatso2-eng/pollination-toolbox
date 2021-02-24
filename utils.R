@@ -165,6 +165,10 @@ countAggregate <- function(data, x, fill){
   return(aggregated)
 }
 
+to.VPD <- function(T,RH){
+  abs((RH / 100 * 0.6108 * exp(17.27 * T / (T + 237.3))) - (0.6108 * exp(17.27 * T / (T + 237.3))))
+}
+
 # Module: Print Labels -------------------------------------------------------------
 
 # this function creates a desired number of rows to represent different instances of a cross
