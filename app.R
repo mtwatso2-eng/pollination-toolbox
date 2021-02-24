@@ -61,15 +61,6 @@ server <- function(input, output, session) {
         ),
         tz = input$administratorDataTZ
       )
-      # Get authentication for Google Sheets access
-      options(gargle_oauth_cache = ".secrets")
-      gargle::gargle_oauth_cache()
-      googlesheets4::gs4_auth()
-      list.files(".secrets/")
-      gs4_auth(
-        cache = ".secrets",
-        email = administratorData$email
-      )
       saveRDS(administratorData, "administratorData")
       saveRDS(NULL, "cache")
       session$reload()

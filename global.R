@@ -5,18 +5,28 @@ require(googlesheets4)
 require(DT); require(plotly)
 require(brapir)
 
-# Change a default option that can complicate data frame creation
-options(stringsAsFactors=FALSE)
-
-# Import our tools from within the project folder
+# Import functions defined in the app
 source("utils.R")
 
-try({
+if("administratorData" %in% list.files()){
   # Import user data
   administratorData <<- readRDS("administratorData")
   # Set timezone to user time zone
   Sys.setenv(TZ = administratorData$tz)
-})
+}
+
+# Get new Google Sheets API authentication token
+options(gargle_oauth_cache = ".secrets")
+gargle::gargle_oauth_cache()
+googlesheets4::gs4_auth()
+list.files(".secrets/")
+gs4_auth(
+  cache = ".secrets",
+  email = administratorData$email
+)
+
+# Change a default option that can complicate data frame creation
+options(stringsAsFactors=FALSE)
 
 # Tooltips for table column names - these tooltips are not table-specific 
 # (ie they will show up in any table containing one of the below names).
