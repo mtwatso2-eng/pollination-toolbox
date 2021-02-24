@@ -121,12 +121,13 @@ while(TRUE){ try({
       CleanedSeedTimestamp = as.POSIXct(CleanedSeedTimestamp, optional = TRUE)
     ) %>%
     group_by(Cross) %>%
-    mutate(CleanedSeed = sum(CleanedSeed, na.rm = TRUE)) %>%
+    mutate(NumberOfCleanedSeed = sum(NumberOfCleanedSeed, na.rm = TRUE)) %>%
     slice_max(order_by = CleanedSeedTimestamp, n = 1) %>%
     mutate(
       ToDateCapsules = capsulesAtTimestamp(Cross, CleanedSeedTimestamp),
-      SeedPerCapsule = ifelse(ToDateCapsules > 0 & CleanedSeed > 0, round(CleanedSeed / ToDateCapsules, 2), NA),
+      SeedPerCapsule = ifelse(ToDateCapsules > 0 & NumberOfCleanedSeed > 0, round(NumberOfCleanedSeed / ToDateCapsules, 2), NA),
     ) %>%
+    rename(CleanedSeed = NumberOfCleanedSeed) %>%
     select(Cross, CleanedSeed, SeedPerCapsule)
 
   saveRDS(cache, "cache")
