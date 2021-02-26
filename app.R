@@ -2,7 +2,7 @@ source("global.R")
 
 # Run background processes and import modules if app is configured
 if("administratorData" %in% list.files()){
-  runAsync(list.files(path = "background", full.names = TRUE))
+  # runAsync(list.files(path = "background", full.names = TRUE))
   sapply(list.files(path = "modules", recursive = TRUE, pattern = "^.*\\.R$", full.names = TRUE), source)
 }
 

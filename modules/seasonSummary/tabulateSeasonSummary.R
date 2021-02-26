@@ -1,11 +1,14 @@
 tabulateSeasonSummary <- function(input, cache){
   
+  cleanedSeed <- cache$readOnly$cleanedSeed
+  
   lastCapsuleCollectionDate <- (
       cache$master$consolidated$CapsuleCollectionTimestamp %>%
       na.omit %>%
       max %>% 
       as.Date
     )
+  
   aggregated <- cache$master$consolidated %>%
     group_by(Cross) %>%
     mutate(
@@ -18,19 +21,20 @@ tabulateSeasonSummary <- function(input, cache){
       Compatibilities = sum(DedicationStatus == "Compatibility", na.rm = TRUE),
       CapsuleCollections = sum((!is.na(CapsuleCollectionTimestamp))),
       SuccessRate = ifelse(Old > 0, round(CapsuleCollections / Old, 2), NA),
-      ToMatureCapsules = 
+      ToMatureCapsules = as.integer(round(
         sum(na.rm = TRUE,
           (is.na(CapsuleCollectionTimestamp) & is.na(FailedPollinationTimestamp) & (Date >= Sys.Date() - 40) & (Date < input$projectionDate - 40))
-        ) * SuccessRate,
-      ToDoCapsules = as.numeric(
+        ) * SuccessRate
+      )),
+      ToDoCapsules = as.integer(round(
         (Sys.Date() < input$projectionDate - 40) *
         ((input$projectionDate - 40) - Sys.Date()) *
         (ThisWeek / 7) * SuccessRate
-      )
+      ))
     ) %>%
     slice(1) %>%
     ungroup() %>%
-    full_join(cache$readOnly$cleanedSeed, by = c("Parents" = "Cross"))
+    full_join(cleanedSeed, by = c("Parents" = "Cross"))
   
   if(input$costPerSeed){
     hourlyWage <- 12
