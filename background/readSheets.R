@@ -42,13 +42,17 @@ while(TRUE){ try({
     )
   
   cache$readOnly$weather %<>% 
-    mutate(Time = Time %>% round_date(period(minutes = 5)) %>% force_tz("EST"))
+    mutate(Time = Time %>% round_date(period(minutes = 5)) %>% force_tz("EST")) %>%
+    filter(!is.na(Time))
   
   # Consolidate data ----------------------------------------------------
   
   # copy the sheets data so we can consolidate data while the cache stays mostly "raw data"
   pollinations <- cache$readOnly$pollinations
-  failedPollinations <- cache$readOnly$failedPollinations
+  failedPollinations <- cache$readOnly$failedPollinations %<>% 
+    filter(sapply(Crosses, function(x){
+      grepl(".", x, fixed = TRUE)
+    }))
   capsuleCollections <- cache$readOnly$capsuleCollections
   cleanedSeed <- cache$readOnly$cleanedSeed
   weather <- cache$readOnly$weather
@@ -56,25 +60,17 @@ while(TRUE){ try({
   # consolidate the Google Form data frames into one data frame
   consolidated <- pollinations
   
-  if(nrow(failedPollinations) > 0){
-    # Remove dedicated crosses from failed pollinations
-    failedPollinations %<>% filter(sapply(Crosses, function(x){
-      grepl(".", x, fixed = TRUE)
-    }))
-    consolidated <- merge(
-      consolidated %>% group_by(Crosses) %>% mutate(id = row_number()) %>% ungroup(),
-      failedPollinations %>% group_by(Crosses) %>% mutate(id = row_number()) %>% ungroup(),
-      all.x = TRUE
-    )
-  }
+  consolidated <- merge(
+    consolidated %>% group_by(Crosses) %>% mutate(id = row_number()) %>% ungroup(),
+    failedPollinations %>% group_by(Crosses) %>% mutate(id = row_number()) %>% ungroup(),
+    all.x = TRUE
+  )
   
-  if(nrow(capsuleCollections) > 0){
-    consolidated <- merge(
-      consolidated %>% group_by(Crosses) %>% mutate(id = row_number()) %>% ungroup(),
-      capsuleCollections %>% group_by(Crosses) %>% mutate(id = row_number()) %>% ungroup(),
-      all.x = TRUE
-    )
-  }
+  consolidated <- merge(
+    consolidated %>% group_by(Crosses) %>% mutate(id = row_number()) %>% ungroup(),
+    capsuleCollections %>% group_by(Crosses) %>% mutate(id = row_number()) %>% ungroup(),
+    all.x = TRUE
+  )
 
   # insert any failed pollination that lacks a corresponding pollination
   for (i in which(!failedPollinations[,"Crosses"] %in% consolidated[,"Crosses"])){
@@ -105,7 +101,7 @@ while(TRUE){ try({
     group_by(Crosses) %>% 
     filter(row_number() == 1 | DedicationStatus == "Dedicated") %>%
     ungroup()
-
+  
   cache$master$consolidated <- consolidated
   
   capsulesAtTimestamp <- function(whichCross, CleanedSeedTimestamp){
