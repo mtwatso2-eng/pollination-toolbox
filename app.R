@@ -24,7 +24,8 @@ if("administratorData" %in% list.files()){
     ),
     modulePanel("Raw Data", value = "rawData"),
     modulePanel("Print Labels", value = "printLabels"),
-    modulePanel("About", value = "about"), br()
+    modulePanel("About", value = "about"), br(),
+    tags$head(tags$link(rel="shortcut icon", href="https://thumbs.dreamstime.com/b/sweet-potato-white-background-sweet-potato-batata-white-background-isolated-103677860.jpg"))
   )
 } else {ui <- fluidPage()}
 

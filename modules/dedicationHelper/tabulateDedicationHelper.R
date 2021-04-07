@@ -1,5 +1,5 @@
 tabulateDedicationHelper <- function(input, cache){
-  
+    
   lastFailedPollinationDate <- (
     cache$master$consolidated$FailedPollinationTimestamp %>%
       na.omit %>%
@@ -24,7 +24,7 @@ tabulateDedicationHelper <- function(input, cache){
     select(Cross, Compatibilities:CompatibilityCapsuleCollections, Program:Parents) %>%
     filter(!is.na(Cross)) %>%
     arrange(desc(SuccessRateEstimate)) %>%
-    arrange(FemaleCode) %>%
+    arrange(FemaleCode)
   
   return(aggregated)
   
