@@ -2,7 +2,7 @@ source("global.R")
 
 # Run background processes and import modules if app is configured
 if("administratorData" %in% list.files()){
-  runAsync(list.files(path = "background", full.names = TRUE))
+  # runAsync(list.files(path = "background", full.names = TRUE))
   sapply(list.files(path = "modules", recursive = TRUE, pattern = "^.*\\.R$", full.names = TRUE), source)
 }
 
@@ -24,7 +24,8 @@ if("administratorData" %in% list.files()){
     ),
     modulePanel("Raw Data", value = "rawData"),
     modulePanel("Print Labels", value = "printLabels"),
-    modulePanel("About", value = "about"), br()
+    modulePanel("About", value = "about"), br(),
+    tags$head(tags$link(rel="shortcut icon", href="https://thumbs.dreamstime.com/b/sweet-potato-white-background-sweet-potato-batata-white-background-isolated-103677860.jpg"))
   )
 } else {ui <- fluidPage()}
 

@@ -323,3 +323,35 @@ DbIdToName <- function(con, germplasmDbId){
   brapi_get_germplasm(con, germplasmDbId = germplasmDbId)$germplasmName
 }
 
+# ------ local version
+
+# pedigrees <- read.csv("corrected.csv", stringsAsFactors = F)
+
+pedigree <- local(function(germplasmName){
+  
+  recursiveGetParents <- function(germplasmName, thisPedigree = list()){
+    try({parents <- getParents(germplasmName)})
+    if(exists("parents")){
+      for(i in 1:length(parents)){
+        if(parents[i] != "NA"){
+          thisPedigree[[parents[i]]] <- c(recursiveGetParents(parents[i]))
+        }
+        else{
+          thisPedigree[i] <- list()
+        }
+      }
+    }
+    
+    return(thisPedigree)
+  }
+  
+  thisPedigree <- list()
+  thisPedigree[[germplasmName]] <- recursiveGetParents(germplasmName)
+  return(thisPedigree)
+  
+})
+
+localGetParents <- function(germplasmName){
+  c(pedigrees)
+}
+
