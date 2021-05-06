@@ -31,32 +31,10 @@ nurseryPlanner <- list(
     
     randomizeCount <<- 0
     optimizeCount <<- 0
-    
-    updateTable <<- T
-    updateTableAgain <<- T
-    observeEvent(input$appearanceTable, {
-      if(!updateTableAgain){
-        updateTable <<- T
-        updateTableAgain <<- T
-        return()
-      }
-      updateTableAgain <<- F
-      if(updateTable){
-        output$appearanceTable <- renderRHandsontable({
-          thisNursery <- unlist(isolate(input$appearanceTable$data))
-          return(
-            thisNursery %>%
-              matrix(., nrow = isolate(input$plotRows), byrow = T) %>%
-              rhandsontable(., colHeaders = 1:ncol(.), rowHeaders = 1:nrow(.),
-                nurserySeedScores = thisNursery %>% nurserySeedScores(., c(isolate(input$plotRows), isolate(input$plotColumns)), crosses)
-              ) %>%
-              hot_heatmap(renderer = NonValueBasedHeatmapRenderer())
-          )
-        })
-      }
-    })
-    
+  
     output$appearanceTable <- renderRHandsontable((function(){
+          
+    validate(need(!is.null(input$whatParents), ""))
       
       input$randomizeNursery
       input$optimizeNursery
