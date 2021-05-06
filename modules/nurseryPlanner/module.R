@@ -8,7 +8,7 @@ nurseryPlanner <- list(
     ),
     pickerInput("whatParents",
       "What parents (GH codes)?",
-      choices = sort(as.numeric(union(pa$FemaleCode, pa$MaleCode))),
+      choices = sort(as.numeric(union(cache()$master$crosses$FemaleCode, cache()$master$crosses$FemaleCode))),
       multiple = T,
       options = list(`actions-box` = TRUE), 
       selected = NULL
