@@ -10,6 +10,7 @@ nurseryPlanner <- list(
       "What parents (GH codes)?",
       choices = sort(as.numeric(union(pa$FemaleCode, pa$MaleCode))),
       multiple = T,
+      options = list(`actions-box` = TRUE), 
       selected = NULL
     ),
     flowLayout(
@@ -47,7 +48,7 @@ nurseryPlanner <- list(
             thisNursery %>%
               matrix(., nrow = isolate(input$plotRows), byrow = T) %>%
               rhandsontable(., colHeaders = 1:ncol(.), rowHeaders = 1:nrow(.),
-                nurserySeedScores = thisNursery %>% nurserySeedScores(., c(isolate(input$plotRows), isolate(input$plotColumns)), crosses())
+                nurserySeedScores = thisNursery %>% nurserySeedScores(., c(isolate(input$plotRows), isolate(input$plotColumns)), crosses)
               ) %>%
               hot_heatmap(renderer = NonValueBasedHeatmapRenderer())
           )
@@ -67,87 +68,30 @@ nurseryPlanner <- list(
         thisNursery %>%
           matrix(., nrow = isolate(input$plotRows), byrow = T) %>%
           rhandsontable(., colHeaders = 1:ncol(.), rowHeaders = 1:nrow(.),
-            nurserySeedScores = thisNursery %>% nurserySeedScores(., c(isolate(input$plotRows), isolate(input$plotColumns)), crosses())
+            nurserySeedScores = thisNursery %>% nurserySeedScores(., c(isolate(input$plotRows), isolate(input$plotColumns)), crosses)
           ) %>%
           hot_heatmap(renderer = NonValueBasedHeatmapRenderer())
       )}
 
       if(input$optimizeNursery[1] > optimizeCount){
         optimizeCount <<- input$optimizeNursery[1]
-        thisNursery <- optimizeNursery(unlist(isolate(input$appearanceTable$data)), input, crosses())
+        thisNursery <- optimizeNursery(unlist(isolate(input$appearanceTable$data)), input, crosses)
         return(
          thisNursery %>%
           matrix(., nrow = isolate(input$plotRows), byrow = T) %>%
           rhandsontable(., colHeaders = 1:ncol(.), rowHeaders = 1:nrow(.), 
-            nurserySeedScores = thisNursery %>% nurserySeedScores(., c(isolate(input$plotRows), isolate(input$plotColumns)), crosses())
+            nurserySeedScores = thisNursery %>% nurserySeedScores(., c(isolate(input$plotRows), isolate(input$plotColumns)), crosses)
           ) %>%
           hot_heatmap(renderer = NonValueBasedHeatmapRenderer())
         )}
       
     })())
       
-    output$nurserySeedScore <- renderText(writeNurserySeedScore(input, crosses()))
+    output$nurserySeedScore <- renderText(writeNurserySeedScore(input, crosses))
 
   }
   
 )
-
-crosses <- function(){
-  
-  cache <- cache()
-  cleanedSeed <- cache$readOnly$cleanedSeed
-  
-  lastCapsuleCollectionDate <- (
-      cache$master$consolidated$CapsuleCollectionTimestamp %>%
-      na.omit %>%
-      max %>% 
-      as.Date
-    )
-  
-  aggregated <- cache$master$consolidated %>%
-    group_by(Cross) %>%
-    mutate(
-      across(where(is.numeric), function(x){mean(x, na.rm = TRUE)}),
-      IsFortyPlusDaysOld = (Date <= lastCapsuleCollectionDate - 40),
-      ThisWeek = sum(Date >= Sys.Date() - 7, na.rm = TRUE),
-      Old = sum(IsFortyPlusDaysOld, na.rm = TRUE),
-      Total = n(),
-      Dedicated = sum(DedicationStatus == "Dedicated", na.rm = TRUE),
-      Compatibilities = sum(DedicationStatus == "Compatibility", na.rm = TRUE),
-      CapsuleCollections = sum((!is.na(CapsuleCollectionTimestamp))),
-      SuccessRate = ifelse(Old > 0, round(CapsuleCollections / Old, 2), NA)
-    ) %>%
-    slice(1) %>%
-    full_join(cleanedSeed, by = c("Parents" = "Cross")) %>%
-    mutate(
-      across(SeedPerCapsule:last_col(), function(x){round(weighted.mean(x, CapsuleCollections, na.rm = TRUE), 2)}),
-      across(where(is.integer), function(x){round(sum(x, na.rm = TRUE))}),
-      SuccessRate = ifelse(CapsuleCollections <= Old , round(CapsuleCollections / Old, 2), NA)
-    ) %>% 
-    slice(1) %>% 
-    ungroup() %>%
-    arrange(desc(Total)) %>%
-    select(Cross, Total:last_col()) %>%
-    filter(!is.na(Cross)) %>%
-    merge(., cache$master$crosses, by = "Cross", all.x = TRUE, sort = FALSE) %>%
-    replace_na(list(SeedPerCapsule = 1.3)) %>%
-    rowwise() %>%
-    mutate(PlantCount = sum(cache$master$dedications$Cross == Cross, na.rm = T)) %>%
-    mutate(PlantCount = ifelse(PlantCount, PlantCount, 1)) %>%
-    group_by(FemaleCode) %>%
-    mutate(
-      SeasonFlowerCountEstimate = max(Total / PlantCount)
-    ) %>%
-    ungroup() %>%
-    mutate(
-      SuccessRate = SuccessRate * (Compatibilities > 4),
-      SeedPerPol = SeedPerCapsule * SuccessRate,
-      SeedPerPlantPerSeason = SeasonFlowerCountEstimate * SeedPerPol
-    ) %>%
-    select(Cross, SeedPerPlantPerSeason)
-  return(aggregated)
-  
-}
 
 nurserySeedScore <- function(nursery, nurseryDimensions, crosses){
   seedScores <- seq_along(nursery) %>% sapply(function(x){

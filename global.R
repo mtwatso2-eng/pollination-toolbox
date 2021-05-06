@@ -8,6 +8,8 @@ require(brapir)
 # Import functions defined in the app
 source("utils.R")
 
+crosses <<- crosses()
+
 if("administratorData" %in% list.files()){
   # Import user data
   administratorData <<- readRDS("administratorData")

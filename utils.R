@@ -169,6 +169,66 @@ to.VPD <- function(T,RH){
   abs((RH / 100 * 0.6108 * exp(17.27 * T / (T + 237.3))) - (0.6108 * exp(17.27 * T / (T + 237.3))))
 }
 
+# Module: Nursery Planner -------------------------------------------------------------
+
+crosses <- function(){
+  
+  cache <- cache()
+  cleanedSeed <- cache$readOnly$cleanedSeed
+  
+  lastCapsuleCollectionDate <- (
+      cache$master$consolidated$CapsuleCollectionTimestamp %>%
+      na.omit %>%
+      max %>% 
+      as.Date
+    )
+  
+  aggregated <- cache$master$consolidated %>%
+    group_by(Cross) %>%
+    mutate(
+      across(where(is.numeric), function(x){mean(x, na.rm = TRUE)}),
+      IsFortyPlusDaysOld = (Date <= lastCapsuleCollectionDate - 40),
+      ThisWeek = sum(Date >= Sys.Date() - 7, na.rm = TRUE),
+      Old = sum(IsFortyPlusDaysOld, na.rm = TRUE),
+      Total = n(),
+      Dedicated = sum(DedicationStatus == "Dedicated", na.rm = TRUE),
+      Compatibilities = sum(DedicationStatus == "Compatibility", na.rm = TRUE),
+      CapsuleCollections = sum((!is.na(CapsuleCollectionTimestamp))),
+      SuccessRate = ifelse(Old > 0, round(CapsuleCollections / Old, 2), NA)
+    ) %>%
+    slice(1) %>%
+    full_join(cleanedSeed, by = c("Parents" = "Cross")) %>%
+    mutate(
+      across(SeedPerCapsule:last_col(), function(x){round(weighted.mean(x, CapsuleCollections, na.rm = TRUE), 2)}),
+      across(where(is.integer), function(x){round(sum(x, na.rm = TRUE))}),
+      SuccessRate = ifelse(CapsuleCollections <= Old , round(CapsuleCollections / Old, 2), NA)
+    ) %>% 
+    slice(1) %>% 
+    ungroup() %>%
+    arrange(desc(Total)) %>%
+    select(Cross, Total:last_col()) %>%
+    filter(!is.na(Cross)) %>%
+    merge(., cache$master$crosses, by = "Cross", all.x = TRUE, sort = FALSE) %>%
+    replace_na(list(SeedPerCapsule = 1.3)) %>%
+    rowwise() %>%
+    mutate(PlantCount = sum(cache$master$dedications$Cross == Cross, na.rm = T)) %>%
+    mutate(PlantCount = ifelse(PlantCount, PlantCount, 1)) %>%
+    group_by(FemaleCode) %>%
+    mutate(
+      SeasonFlowerCountEstimate = max(Total / PlantCount)
+    ) %>%
+    ungroup() %>%
+    mutate(
+      SuccessRate = SuccessRate * (Compatibilities > 4),
+      SeedPerPol = SeedPerCapsule * SuccessRate,
+      SeedPerPlantPerSeason = SeasonFlowerCountEstimate * SeedPerPol
+    ) %>%
+    select(Cross, SeedPerPlantPerSeason)
+  return(aggregated)
+  
+}
+
+
 # Module: Print Labels -------------------------------------------------------------
 
 # this function creates a desired number of rows to represent different instances of a cross
