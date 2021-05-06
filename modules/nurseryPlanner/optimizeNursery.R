@@ -1,4 +1,4 @@
-optimizeNursery <- function(nursery, input){
+optimizeNursery <- function(nursery, input, crosses){
 parents <- input$whatParents
 nurseryDimensions <- c(input$plotRows, input$plotColumns)
 bestNursery <- nursery[]

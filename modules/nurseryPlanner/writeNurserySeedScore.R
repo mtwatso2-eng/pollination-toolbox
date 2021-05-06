@@ -1,6 +1,6 @@
-writeNurserySeedScore <- function(input){
+writeNurserySeedScore <- function(input, crosses){
   
-  parents <- input$whatParents
+  whatParents <- input$whatParents
   thisNursery <- input$appearanceTable$data %>% unlist()
         
   nurseryDimensions <- c(input$plotRows, input$plotColumns)
@@ -9,7 +9,7 @@ writeNurserySeedScore <- function(input){
     unlist() %>%
     round()
   )
-  thisNurseryParentCounts <- paste0(unlist(map(map(parents, ~grep(.x, thisNursery)), length)), " ", parents, "'s")
+  thisNurseryParentCounts <- paste0(unlist(map(map(whatParents, ~grep(.x, thisNursery)), length)), " ", whatParents, "'s")
     
   if(class(thisNurserySeedScore) != "try-error"){
     return(paste0("Nursery Seed Score: ", thisNurserySeedScore, ". Parent counts: ", paste(thisNurseryParentCounts, collapse = ", ")))
