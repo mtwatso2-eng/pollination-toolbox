@@ -13,12 +13,18 @@ while(TRUE){ try({
   cache$readOnly$pollinations %<>% 
     mutate(
       Timestamp = as.POSIXct(Timestamp, optional = TRUE),
-      TimeTakenSecs = as.character(Timestamp - dplyr::lag(., order_by=Pollinator)$Timestamp),
+      Date = as.Date(Timestamp),
+      TimeTakenSecs = as.character(Timestamp - dplyr::lag(., order_by = Pollinator)$Timestamp),
+    ) %>%
+    mutate(
+      TimeTakenSecs = ifelse(dplyr::lag(., order_by = Pollinator)$Date == Date, TimeTakenSecs, NA)
     ) %>%
     splitDenseRows("Crosses") %>% 
     group_by(Timestamp, Pollinator) %>%
     mutate(
       Timestamp = as.POSIXct(Timestamp, optional = TRUE),
+      Date = as.Date(Timestamp),
+      Time = round_date(Timestamp, period(minutes = 5)),
       Crosses = removeGroup(Crosses),
       TimeTakenSecs = round(as.numeric(TimeTakenSecs) / n(), 2),
       TimeTakenSecs = ifelse(TimeTakenSecs > 0 & TimeTakenSecs < 1800, TimeTakenSecs, NA)
@@ -91,9 +97,7 @@ while(TRUE){ try({
       CrossInstance = getCrossInstance(Crosses),
       DedicationStatus = sapply(Crosses, function(x){
         ifelse(grepl(".", x, fixed = TRUE), "Compatibility", "Dedicated")
-      }),
-      Date = as.Date(Timestamp),
-      Time = round_date(Timestamp, period(minutes = 5)),
+      })
     ) %>%
     merge(., cache$master$crosses[!duplicated(cache$master$crosses[,"Cross"]),], by = "Cross", all.x = TRUE) %>%
     left_join(weather, by = "Time") %>%

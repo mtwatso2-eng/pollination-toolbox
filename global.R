@@ -1,8 +1,8 @@
 # Import packages
-require(shiny); require(shinyBS)
+require(shiny); require(shinyBS); require(shinyWidgets)
 require(magrittr); require(tidyverse); require(lubridate)
 require(googlesheets4)
-require(DT); require(plotly)
+require(DT); require(plotly); require(rhandsontable);
 require(brapir)
 
 # Import functions defined in the app
@@ -13,20 +13,19 @@ if("administratorData" %in% list.files()){
   administratorData <<- readRDS("administratorData")
   # Set timezone to user time zone
   Sys.setenv(TZ = administratorData$tz)
+  # Get new Google Sheets API authentication token
+  options(gargle_oauth_cache = ".secrets")
+  gargle::gargle_oauth_cache()
+  googlesheets4::gs4_auth()
+  list.files(".secrets/")
+  gs4_auth(
+    cache = ".secrets",
+    email = administratorData$email
+  )
 }
 
-# Get new Google Sheets API authentication token
-options(gargle_oauth_cache = ".secrets")
-gargle::gargle_oauth_cache()
-googlesheets4::gs4_auth()
-list.files(".secrets/")
-gs4_auth(
-  cache = ".secrets",
-  email = administratorData$email
-)
-
 # Change a default option that can complicate data frame creation
-options(stringsAsFactors=FALSE)
+options(stringsAsFactors = FALSE)
 
 # Tooltips for table column names - these tooltips are not table-specific 
 # (ie they will show up in any table containing one of the below names).
