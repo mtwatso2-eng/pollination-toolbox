@@ -13,7 +13,7 @@ if("administratorData" %in% list.files()){
       modulePanel("Pollination Counts", value = "pollinationCounts"),
       modulePanel("Season Summary", value = "seasonSummary"),
       modulePanel("Dedication Helper", value = "dedicationHelper"),
-      modulePanel("Season Success 1Rate", value = "seasonSuccessRate"),
+      modulePanel("Season Success Rate", value = "seasonSuccessRate"),
       modulePanel("Rates by Instances", value = "ratesByInstances")
     ),
     navbarMenu("Google Forms",

@@ -1,0 +1,12 @@
+name: Testing
+title: Testing
+username:
+account: mark-watson
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4089452
+bundleId: 4565138
+url: https://mark-watson.shinyapps.io/Testing/
+when: 1620306037.24804
+asMultiple: FALSE
+asStatic: FALSE
