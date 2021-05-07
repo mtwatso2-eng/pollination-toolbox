@@ -1,6 +1,9 @@
 writeNurserySeedScore <- function(input, crosses){
   
+  validate(need(!is.null(input$appearanceTable$data), ""))
+  
   whatParents <- input$whatParents
+    
   thisNursery <- input$appearanceTable$data %>% unlist()
         
   nurseryDimensions <- c(input$plotRows, input$plotColumns)

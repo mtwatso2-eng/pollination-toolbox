@@ -7,8 +7,8 @@ nurseryPlanner <- list(
       )
     ),
     pickerInput("whatParents",
-      "What parents (GH codes)?",
-      choices = sort(as.numeric(union(cache()$master$crosses$FemaleCode, cache()$master$crosses$FemaleCode))),
+      "What parents?",
+      choices = sort(union(cache()$master$crosses$FemaleParent, cache()$master$crosses$MaleParent)),
       multiple = T,
       options = list(`actions-box` = TRUE), 
       selected = NULL
@@ -82,7 +82,7 @@ nurserySeedScore <- function(nursery, nurseryDimensions, crosses){
     )
     males <- males[!is.na(males)]
     return(mean(map_dbl(males, function(y){
-      thisCross <- unlist(crosses[crosses$Cross == paste0(female, "x", y), "SeedPerPlantPerSeason"])
+      thisCross <- unlist(crosses[crosses$Parents == paste(female, "x", y), "SeedPerPlantPerSeason"])
       return(ifelse(length(thisCross) > 0, thisCross, 0))
     }), na.rm = T))
   })
@@ -100,7 +100,7 @@ nurserySeedScores <- function(nursery, nurseryDimensions, crosses){
     )
     males <- males[!is.na(males)]
     return(mean(map_dbl(males, function(y){
-      thisCross <- unlist(crosses[crosses$Cross == paste0(female, "x", y), "SeedPerPlantPerSeason"])
+      thisCross <- unlist(crosses[crosses$Parents == paste(female, "x", y), "SeedPerPlantPerSeason"])
       return(ifelse(length(thisCross) > 0, thisCross, 0))
     }), na.rm = T))
   })

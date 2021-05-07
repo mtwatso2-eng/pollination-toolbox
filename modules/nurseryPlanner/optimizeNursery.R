@@ -1,5 +1,5 @@
 optimizeNursery <- function(nursery, input, crosses){
-parents <- input$whatParents
+whatParents <- input$whatParents
 nurseryDimensions <- c(input$plotRows, input$plotColumns)
 bestNursery <- nursery[]
 bestSuccess <- nurserySeedScore(bestNursery, nurseryDimensions, crosses)
@@ -16,7 +16,7 @@ while(Sys.time() < endTime){
       thisNursery %<>% replace(swapSpots, .[rev(swapSpots)])
   } else{
       # ...swap clone with new clone
-      thisNursery[sample(1:length(thisNursery), 1)] <- sample(parents, 1)
+      thisNursery[sample(1:length(thisNursery), 1)] <- sample(whatParents, 1)
   }
   
   if(nurserySeedScore(thisNursery, nurseryDimensions, crosses) >= (bestSuccess * 1)){
@@ -31,9 +31,9 @@ while(Sys.time() < endTime){
 # print(bestNursery %>% matrix(., nrow = nurseryDimensions[1]), byrow = T)
 # print(paste0(bestNursery, ",", collapse = ""))
 # print(bestSuccess)
-# print(paste0(unlist(map(map(parents, ~grep(.x, bestNursery)), length)), " ", parents, "'s"))
+# print(paste0(unlist(map(map(whatParents, ~grep(.x, bestNursery)), length)), " ", whatParents, "'s"))
 
-return(as.integer(bestNursery))
+return(bestNursery)
 
 }
 

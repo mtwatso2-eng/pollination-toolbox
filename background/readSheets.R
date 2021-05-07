@@ -3,6 +3,7 @@ cache <- list()
 
 while(TRUE){ try({
   
+  cache$master$codes <- tenacious_range_read(administratorData$urls$master, "Codes", "c")
   cache$master$crosses <- tenacious_range_read(administratorData$urls$master, "Crosses", "c")
   cache$master$dedications <- tenacious_range_read(administratorData$urls$master, "Dedications", "c")
   cache$readOnly$pollinations <- tenacious_range_read(administratorData$urls$readOnly, "Pollinations", "Tcc")

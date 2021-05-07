@@ -184,7 +184,7 @@ crosses <- function(){
     )
   
   aggregated <- cache$master$consolidated %>%
-    group_by(Cross) %>%
+    group_by(Parents) %>%
     mutate(
       across(where(is.numeric), function(x){mean(x, na.rm = TRUE)}),
       IsFortyPlusDaysOld = (Date <= lastCapsuleCollectionDate - 40),
@@ -206,12 +206,12 @@ crosses <- function(){
     slice(1) %>% 
     ungroup() %>%
     arrange(desc(Total)) %>%
-    select(Cross, Total:last_col()) %>%
-    filter(!is.na(Cross)) %>%
-    merge(., cache$master$crosses, by = "Cross", all.x = TRUE, sort = FALSE) %>%
+    select(Parents, Total:last_col()) %>%
+    filter(!is.na(Parents)) %>%
+    merge(., cache$master$crosses, by = "Parents", all.x = TRUE, sort = FALSE) %>%
     replace_na(list(SeedPerCapsule = 1.3)) %>%
     rowwise() %>%
-    mutate(PlantCount = sum(cache$master$dedications$Cross == Cross, na.rm = T)) %>%
+    mutate(PlantCount = sum(cache$master$dedications$Parents == Parents, na.rm = T)) %>%
     mutate(PlantCount = ifelse(PlantCount, PlantCount, 1)) %>%
     group_by(FemaleCode) %>%
     mutate(
@@ -223,7 +223,7 @@ crosses <- function(){
       SeedPerPol = SeedPerCapsule * SuccessRate,
       SeedPerPlantPerSeason = SeasonFlowerCountEstimate * SeedPerPol
     ) %>%
-    select(Cross, SeedPerPlantPerSeason)
+    select(Parents, SeedPerPlantPerSeason)
   return(aggregated)
   
 }
