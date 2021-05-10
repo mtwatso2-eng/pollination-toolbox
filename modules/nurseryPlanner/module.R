@@ -3,7 +3,8 @@ nurseryPlanner <- list(
   "ui" = fluidPage(
     bsCollapsePanel(title = "Advanced Options",
       flowLayout(
-        numericInput("optimizationTime", "Seconds per optimization batch", value = 1)
+        numericInput("optimizationTime", "Seconds per optimization batch", value = 1),
+        checkboxInput("cloneNumberChanges", "Allow changes to clone number during optimization?", value = 1)
       )
     ),
     pickerInput("whatParents",
