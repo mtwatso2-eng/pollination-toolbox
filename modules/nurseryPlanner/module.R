@@ -94,10 +94,10 @@ nurserySeedScores <- function(nursery, nurseryDimensions, crosses){
   seedScores <- seq_along(nursery) %>% sapply(function(x){
     female <- nursery[x]
     males <- c(
-      ifelse(x %% nurseryDimensions[1] != 1, nursery[x - 1], NA),
-      ifelse(x %% nurseryDimensions[1] != 0, nursery[x + 1], NA),
-      ifelse(x > nurseryDimensions[1], nursery[x - nurseryDimensions[1]], NA),
-      ifelse(x < length(nursery) -  nurseryDimensions[1], nursery[x + nurseryDimensions[1]], NA)
+      ifelse(x %% nurseryDimensions[2] != 1, nursery[x - 1], NA),
+      ifelse(x %% nurseryDimensions[2] != 0, nursery[x + 1], NA),
+      ifelse(x > nurseryDimensions[2], nursery[x - nurseryDimensions[2]], NA),
+      ifelse(x < length(nursery) -  nurseryDimensions[2], nursery[x + nurseryDimensions[2]], NA)
     )
     males <- males[!is.na(males)]
     return(mean(map_dbl(males, function(y){

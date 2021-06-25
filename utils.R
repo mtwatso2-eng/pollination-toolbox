@@ -414,4 +414,3 @@ pedigree <- local(function(germplasmName){
 localGetParents <- function(germplasmName){
   c(pedigrees)
 }
-
